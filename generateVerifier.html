@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <textarea cols="40" rows="5" id="_source">def main(private field a, field b)
+{
+  assert(a * a == b);
+  return;
+}</textarea>
+  <input type="button" value="Generate Verifier" onclick="_generate()"></input>
+  <h3>Verifier</h3>
+  <textarea cols="40" rows="5" id="verifier"></textarea>
+  <br>
+  <h3>Prover key</h3>
+  <textarea cols="40" rows="5" id="pk"></textarea>
+  <br>
+</body>
+</html>
+
+<script src="https://unpkg.com/zokrates-js@latest/umd.min.js"></script>
+<script>
+  function _generate()
+  {
+    zokrates.initialize().then((zokratesProvider) => {
+      var source = document.getElementById("_source").value
+      const artifacts = zokratesProvider.compile(source);
+      const keypair = zokratesProvider.setup(artifacts.program);
+      const verifier = zokratesProvider.exportSolidityVerifier(keypair.vk);
+
+      document.getElementById("verifier").textContent=verifier;
+      document.getElementById("pk").textContent='{"pk":[' + keypair.pk + ']}';
+    });
+  }
+</script>
